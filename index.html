@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pomodoro Timer</title>
+  <title>FocusFlow — Pomodoro Productivity Station</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -11,162 +11,395 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏳</text></svg>">
 </head>
 <body class="theme-focus">
-  <main class="app-container">
-    <!-- Timer Section Card -->
-    <div class="timer-card">
-      <!-- Header / Mode Tab Selector -->
-      <nav class="mode-tabs" role="tablist" aria-label="Timer Modes">
-        <button 
-          type="button" 
-          role="tab" 
-          id="tab-focus" 
-          class="tab-btn active" 
-          data-mode="focus" 
-          aria-selected="true">
-          Focus
-        </button>
-        <button 
-          type="button" 
-          role="tab" 
-          id="tab-short" 
-          class="tab-btn" 
-          data-mode="shortBreak" 
-          aria-selected="false">
-          Short Break
-        </button>
-        <button 
-          type="button" 
-          role="tab" 
-          id="tab-long" 
-          class="tab-btn" 
-          data-mode="longBreak" 
-          aria-selected="false">
-          Long Break
-        </button>
-      </nav>
-
-      <!-- Active Focus Task Pill (shown when a task is selected) -->
-      <div class="active-task-pill hidden" id="active-task-pill" title="Currently focused task">
-        <span class="active-task-indicator"></span>
-        <span class="active-task-label" id="active-task-label">Focus Task</span>
-      </div>
-
-      <!-- Circular Timer Display -->
-      <div class="clock-wrapper">
-        <svg class="progress-ring" viewBox="0 0 320 320" aria-hidden="true">
-          <circle 
-            class="progress-ring-track" 
-            cx="160" 
-            cy="160" 
-            r="140" 
-            fill="none" 
-            stroke-width="12" 
-          />
-          <circle 
-            class="progress-ring-fill" 
-            id="progress-circle"
-            cx="160" 
-            cy="160" 
-            r="140" 
-            fill="none" 
-            stroke-width="12" 
-            stroke-linecap="round"
-          />
-        </svg>
-
-        <div class="timer-content">
-          <span class="mode-indicator" id="mode-indicator">Focus Time</span>
-          <div class="time-display" id="time-display" aria-live="polite" aria-atomic="true">25:00</div>
-          <span class="session-caption" id="session-caption">Ready to focus</span>
+  <div class="page-wrapper">
+    <!-- Top Global App Bar -->
+    <header class="app-header">
+      <div class="brand-group">
+        <div class="brand-icon-wrap" aria-hidden="true">⏳</div>
+        <div>
+          <h1 class="brand-title">FocusFlow</h1>
+          <p class="brand-subtitle">Pomodoro Productivity Station</p>
         </div>
       </div>
 
-      <!-- Action Controls -->
-      <div class="controls-container">
-        <button type="button" class="ctrl-btn btn-start" id="btn-start" aria-label="Start timer">
-          <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <path d="M8 5.14v14l11-7-11-7z"/>
+      <div class="header-actions">
+        <!-- Theme Toggle (Light / Dark) -->
+        <button type="button" class="header-btn" id="btn-theme-toggle" aria-label="Toggle dark/light theme" title="Toggle theme">
+          <svg class="icon theme-icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
           </svg>
-          <span>Start</span>
+          <svg class="icon theme-icon-moon hidden" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
         </button>
 
-        <button type="button" class="ctrl-btn btn-pause" id="btn-pause" aria-label="Pause timer" disabled>
-          <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        <!-- Settings Button -->
+        <button type="button" class="header-btn" id="btn-open-settings" aria-label="Open timer settings" title="Timer Settings">
+          <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
-          <span>Pause</span>
-        </button>
-
-        <button type="button" class="ctrl-btn btn-reset" id="btn-reset" aria-label="Reset timer">
-          <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-          </svg>
-          <span>Reset</span>
-        </button>
-      </div>
-
-      <!-- Footer Sound Notification Toggle -->
-      <div class="card-footer">
-        <button type="button" class="sound-toggle" id="btn-sound-toggle" aria-label="Toggle chime sound" title="Toggle chime notification sound">
-          <svg class="icon sound-on" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-          </svg>
-          <svg class="icon sound-off hidden" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
-          </svg>
-          <span class="sound-label">Chime on</span>
+          <span class="btn-text-sm">Settings</span>
         </button>
       </div>
-    </div>
+    </header>
 
-    <!-- Task Tracker Card -->
-    <section class="task-card" aria-label="Session Tasks">
-      <div class="task-header">
-        <div class="task-title-group">
-          <h2 class="task-title">Session Tasks</h2>
-          <span class="task-counter-pill" id="task-counter-pill">0 completed</span>
+    <!-- Main Split Dashboard -->
+    <main class="split-dashboard">
+      <!-- LEFT COLUMN: Workspace (Timer & Tasks) -->
+      <section class="pane-workspace" aria-label="Timer and Task Workspace">
+        <!-- Timer Card -->
+        <div class="timer-card">
+          <!-- Header / Mode Tab Selector -->
+          <nav class="mode-tabs" role="tablist" aria-label="Timer Modes">
+            <button 
+              type="button" 
+              role="tab" 
+              id="tab-focus" 
+              class="tab-btn active" 
+              data-mode="focus" 
+              aria-selected="true">
+              Focus
+            </button>
+            <button 
+              type="button" 
+              role="tab" 
+              id="tab-short" 
+              class="tab-btn" 
+              data-mode="shortBreak" 
+              aria-selected="false">
+              Short Break
+            </button>
+            <button 
+              type="button" 
+              role="tab" 
+              id="tab-long" 
+              class="tab-btn" 
+              data-mode="longBreak" 
+              aria-selected="false">
+              Long Break
+            </button>
+          </nav>
+
+          <!-- Active Focus Task Pill -->
+          <div class="active-task-pill hidden" id="active-task-pill" title="Click to clear active focus task">
+            <span class="active-task-indicator"></span>
+            <span class="active-task-label" id="active-task-label">Focus Task</span>
+          </div>
+
+          <!-- Circular Timer Display -->
+          <div class="clock-wrapper">
+            <svg class="progress-ring" viewBox="0 0 320 320" aria-hidden="true">
+              <circle 
+                class="progress-ring-track" 
+                cx="160" 
+                cy="160" 
+                r="140" 
+                fill="none" 
+                stroke-width="12" 
+              />
+              <circle 
+                class="progress-ring-fill" 
+                id="progress-circle"
+                cx="160" 
+                cy="160" 
+                r="140" 
+                fill="none" 
+                stroke-width="12" 
+                stroke-linecap="round"
+              />
+            </svg>
+
+            <div class="timer-content">
+              <span class="mode-indicator" id="mode-indicator">Focus Time</span>
+              <div class="time-display" id="time-display" aria-live="polite" aria-atomic="true">25:00</div>
+              <span class="session-caption" id="session-caption">Ready to focus</span>
+            </div>
+          </div>
+
+          <!-- Action Controls -->
+          <div class="controls-container">
+            <button type="button" class="ctrl-btn btn-start" id="btn-start" aria-label="Start timer">
+              <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M8 5.14v14l11-7-11-7z"/>
+              </svg>
+              <span>Start</span>
+            </button>
+
+            <button type="button" class="ctrl-btn btn-pause" id="btn-pause" aria-label="Pause timer" disabled>
+              <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+              </svg>
+              <span>Pause</span>
+            </button>
+
+            <button type="button" class="ctrl-btn btn-reset" id="btn-reset" aria-label="Reset timer">
+              <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+              </svg>
+              <span>Reset</span>
+            </button>
+          </div>
+
+          <!-- Sound Chime Quick Toggle -->
+          <div class="card-footer">
+            <button type="button" class="sound-toggle" id="btn-sound-toggle" aria-label="Toggle chime sound" title="Toggle chime notification sound">
+              <svg class="icon sound-on" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+              </svg>
+              <svg class="icon sound-off hidden" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+              </svg>
+              <span class="sound-label">Chime on</span>
+            </button>
+            <span class="cycle-pill" id="cycle-pill" title="Sessions completed towards long break">Session 1 of 4</span>
+          </div>
         </div>
-        <button type="button" class="btn-clear-done hidden" id="btn-clear-done" title="Clear completed tasks">
-          Clear done
+
+        <!-- Task Tracker Card -->
+        <section class="task-card" aria-label="Session Tasks">
+          <div class="task-header">
+            <div class="task-title-group">
+              <h2 class="task-title">Session Tasks</h2>
+              <span class="task-counter-pill" id="task-counter-pill">0 completed</span>
+            </div>
+            <button type="button" class="btn-clear-done hidden" id="btn-clear-done" title="Clear completed tasks">
+              Clear done
+            </button>
+          </div>
+
+          <!-- Add Task Form -->
+          <form class="task-input-form" id="task-form">
+            <input 
+              type="text" 
+              id="task-input" 
+              class="task-input" 
+              placeholder="Add a task for this session..." 
+              maxlength="100" 
+              autocomplete="off"
+              aria-label="New task name"
+            />
+            <button type="submit" class="btn-add-task" id="btn-add-task" aria-label="Add task">
+              <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Add</span>
+            </button>
+          </form>
+
+          <!-- Task List Container -->
+          <ul class="task-list" id="task-list" role="list">
+            <!-- Rendered dynamically -->
+          </ul>
+
+          <!-- Empty State -->
+          <div class="task-empty-state" id="task-empty-state">
+            <svg class="empty-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            <p class="empty-text">No tasks yet. Add a focus task to stay on track.</p>
+          </div>
+        </section>
+      </section>
+
+      <!-- RIGHT COLUMN: Focus Hub (Analytics & Ambient Soundscapes) -->
+      <aside class="pane-hub" aria-label="Productivity Hub">
+        <!-- Focus Analytics Card -->
+        <section class="card-analytics" aria-label="Daily Focus Analytics">
+          <div class="hub-card-header">
+            <div class="hub-card-title-group">
+              <svg class="hub-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 20V10M12 20V4M6 20v-6"></path>
+              </svg>
+              <h2 class="hub-card-title">Focus Analytics</h2>
+            </div>
+            <span class="badge-tag">Daily</span>
+          </div>
+
+          <!-- Key Metric Grid -->
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-value" id="stat-today-focus">0m</span>
+              <span class="stat-label">Focus Today</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-value" id="stat-today-sessions">0</span>
+              <span class="stat-label">Sessions</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-value" id="stat-daily-streak">0</span>
+              <span class="stat-label">Day Streak 🔥</span>
+            </div>
+          </div>
+
+          <!-- 7-Day Activity Chart -->
+          <div class="chart-section">
+            <div class="chart-header">
+              <span class="chart-title">Last 7 Days (Minutes)</span>
+            </div>
+            <div class="activity-bars-wrapper" id="activity-chart">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Ambient Soundscapes Card -->
+        <section class="card-soundscapes" aria-label="Ambient Soundscapes">
+          <div class="hub-card-header">
+            <div class="hub-card-title-group">
+              <svg class="hub-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+              </svg>
+              <h2 class="hub-card-title">Ambient Sounds</h2>
+            </div>
+            <span class="badge-tag" id="soundscape-status-badge">Off</span>
+          </div>
+
+          <p class="soundscapes-desc">Procedural Web Audio soundscapes to boost concentration without external noise.</p>
+
+          <div class="sound-presets-grid" role="group" aria-label="Select ambient sound">
+            <button type="button" class="preset-btn active" data-sound="none">
+              <span class="preset-icon">🔇</span>
+              <span class="preset-name">Off</span>
+            </button>
+            <button type="button" class="preset-btn" data-sound="rain">
+              <span class="preset-icon">🌧️</span>
+              <span class="preset-name">Rain</span>
+            </button>
+            <button type="button" class="preset-btn" data-sound="waves">
+              <span class="preset-icon">🌊</span>
+              <span class="preset-name">Waves</span>
+            </button>
+            <button type="button" class="preset-btn" data-sound="whiteNoise">
+              <span class="preset-icon">⚪</span>
+              <span class="preset-name">White</span>
+            </button>
+          </div>
+
+          <div class="volume-control-row">
+            <span class="volume-label">Volume</span>
+            <input 
+              type="range" 
+              id="ambient-volume-slider" 
+              class="ambient-slider" 
+              min="0" 
+              max="1" 
+              step="0.05" 
+              value="0.4"
+              aria-label="Ambient volume" 
+            />
+            <span class="volume-percent" id="ambient-volume-percent">40%</span>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <!-- Global App Footer -->
+    <footer class="app-footer">
+      <p>Keyboard shortcuts: <kbd>Space</kbd> Start/Pause &bull; <kbd>R</kbd> Reset &bull; <kbd>S</kbd> Settings</p>
+    </footer>
+  </div>
+
+  <!-- Settings Modal Dialog -->
+  <div class="modal-backdrop hidden" id="settings-modal-backdrop" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-settings-title">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-settings-title">Timer Preferences</h2>
+        <button type="button" class="modal-close-btn" id="btn-close-modal" aria-label="Close settings">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
       </div>
 
-      <!-- Add Task Form -->
-      <form class="task-input-form" id="task-form">
-        <input 
-          type="text" 
-          id="task-input" 
-          class="task-input" 
-          placeholder="Add a task for this session..." 
-          maxlength="100" 
-          autocomplete="off"
-          aria-label="New task name"
-        />
-        <button type="submit" class="btn-add-task" id="btn-add-task" aria-label="Add task">
-          <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          <span>Add</span>
-        </button>
+      <form class="modal-body" id="settings-form">
+        <!-- Durations Group -->
+        <fieldset class="settings-group">
+          <legend class="group-legend">Timer Durations (Minutes)</legend>
+          <div class="input-grid-3">
+            <div class="field-item">
+              <label for="setting-focus">Focus</label>
+              <input type="number" id="setting-focus" min="1" max="90" required />
+            </div>
+            <div class="field-item">
+              <label for="setting-short">Short Break</label>
+              <input type="number" id="setting-short" min="1" max="30" required />
+            </div>
+            <div class="field-item">
+              <label for="setting-long">Long Break</label>
+              <input type="number" id="setting-long" min="1" max="60" required />
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Interval Group -->
+        <fieldset class="settings-group">
+          <legend class="group-legend">Cycles & Automation</legend>
+          <div class="field-row">
+            <label for="setting-cycle">Long break interval (sessions)</label>
+            <input type="number" id="setting-cycle" min="1" max="10" class="input-sm" />
+          </div>
+          <div class="field-toggle-row">
+            <label for="setting-autobreak">Auto-start Breaks</label>
+            <input type="checkbox" id="setting-autobreak" class="toggle-checkbox" />
+          </div>
+          <div class="field-toggle-row">
+            <label for="setting-autofocus">Auto-start Focus</label>
+            <input type="checkbox" id="setting-autofocus" class="toggle-checkbox" />
+          </div>
+        </fieldset>
+
+        <!-- Audio Preferences -->
+        <fieldset class="settings-group">
+          <legend class="group-legend">Alert Audio</legend>
+          <div class="field-row">
+            <label for="setting-chime-tone">Chime Sound</label>
+            <select id="setting-chime-tone" class="select-input">
+              <option value="calm">Calming Major Chord</option>
+              <option value="bell">Crystal Bell</option>
+              <option value="digital">Modern Digital Beep</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <label for="setting-chime-volume">Chime Volume</label>
+            <div class="volume-slider-group">
+              <input type="range" id="setting-chime-volume" min="0" max="1" step="0.05" />
+              <button type="button" class="btn-test-chime" id="btn-test-chime">Preview</button>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Notifications -->
+        <fieldset class="settings-group">
+          <legend class="group-legend">Desktop Notifications</legend>
+          <div class="notification-prompt-row">
+            <span id="notification-status-text">Browser notification for session completion</span>
+            <button type="button" class="btn-secondary-sm" id="btn-request-notification">Enable Notifications</button>
+          </div>
+        </fieldset>
+
+        <!-- Modal Footer Actions -->
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-reset" id="btn-reset-defaults">Reset to Defaults</button>
+          <button type="submit" class="btn-modal-save">Save Changes</button>
+        </div>
       </form>
+    </div>
+  </div>
 
-      <!-- Task List Container -->
-      <ul class="task-list" id="task-list" role="list">
-        <!-- Rendered dynamically -->
-      </ul>
-
-      <!-- Empty State -->
-      <div class="task-empty-state" id="task-empty-state">
-        <svg class="empty-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 20h9"></path>
-          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-        </svg>
-        <p class="empty-text">No tasks yet. Add a focus task to stay on track.</p>
-      </div>
-    </section>
-  </main>
-
-  <script src="app.js"></script>
+  <script type="module" src="src/app.js"></script>
 </body>
 </html>

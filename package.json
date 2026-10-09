@@ -1,0 +1,24 @@
+{
+  "name": "pomodoro-productivity-station",
+  "version": "1.0.0",
+  "description": "Clean, modern Pomodoro Timer & Task Tracker with Focus Analytics and Ambient Soundscapes",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "pomodoro",
+    "productivity",
+    "timer",
+    "soundscapes",
+    "analytics"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "jsdom": "^26.0.0",
+    "vitest": "^3.0.7"
+  }
+}
