@@ -1,0 +1,440 @@
+/* ==========================================================================
+   Design Tokens & CSS Variables
+   Calm, modern aesthetic with soft pastel palettes and rounded geometry
+   ========================================================================== */
+
+:root {
+  /* Default / Focus Mode Palette (Soft Coral / Peach) */
+  --bg-gradient-start: #fdf7f4;
+  --bg-gradient-end: #faeae3;
+  --card-bg: rgba(255, 255, 255, 0.82);
+  --card-border: rgba(255, 255, 255, 0.95);
+  --card-shadow: 0 24px 48px -12px rgba(182, 126, 107, 0.12),
+                 0 8px 24px -4px rgba(0, 0, 0, 0.03);
+
+  --accent-color: #df7356;
+  --accent-hover: #cf6245;
+  --accent-light: #fbeee9;
+  --accent-border: #f3d5ca;
+  --accent-text: #b64d30;
+
+  --track-color: #f6e6e0;
+  --fill-color: #df7356;
+
+  --text-main: #2d3142;
+  --text-muted: #7f8699;
+  --text-subtle: #a6adbe;
+
+  --tab-bg: rgba(240, 235, 231, 0.65);
+  --tab-active-bg: #ffffff;
+  --tab-active-shadow: 0 4px 14px rgba(180, 120, 100, 0.12);
+
+  --radius-full: 9999px;
+  --radius-card: 36px;
+  --radius-btn: 20px;
+
+  --transition-fast: 0.18s ease;
+  --transition-normal: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-theme: background-color 0.6s ease, background 0.6s ease, border-color 0.4s ease;
+}
+
+/* Short Break Mode Theme (Calm Sage / Mint) */
+body.theme-shortBreak {
+  --bg-gradient-start: #f3f9f6;
+  --bg-gradient-end: #e5f2eb;
+  --card-shadow: 0 24px 48px -12px rgba(90, 150, 120, 0.12),
+                 0 8px 24px -4px rgba(0, 0, 0, 0.03);
+
+  --accent-color: #4f9671;
+  --accent-hover: #418260;
+  --accent-light: #e8f5ee;
+  --accent-border: #cbe6d7;
+  --accent-text: #2f694c;
+
+  --track-color: #e2f0e7;
+  --fill-color: #4f9671;
+
+  --tab-bg: rgba(230, 240, 235, 0.7);
+  --tab-active-shadow: 0 4px 14px rgba(80, 145, 110, 0.12);
+}
+
+/* Long Break Mode Theme (Soothing Periwinkle / Slate Sky) */
+body.theme-longBreak {
+  --bg-gradient-start: #f4f7fc;
+  --bg-gradient-end: #e6eef8;
+  --card-shadow: 0 24px 48px -12px rgba(100, 130, 175, 0.12),
+                 0 8px 24px -4px rgba(0, 0, 0, 0.03);
+
+  --accent-color: #557fa6;
+  --accent-hover: #476d91;
+  --accent-light: #eaf1f8;
+  --accent-border: #ccdded;
+  --accent-text: #345778;
+
+  --track-color: #e1ebf5;
+  --fill-color: #557fa6;
+
+  --tab-bg: rgba(232, 238, 246, 0.7);
+  --tab-active-shadow: 0 4px 14px rgba(85, 127, 166, 0.12);
+}
+
+/* ==========================================================================
+   Base & Layout
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: var(--text-main);
+  background: linear-gradient(145deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 16px;
+  transition: var(--transition-theme);
+  user-select: none;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   Timer Card
+   ========================================================================== */
+
+.timer-card {
+  width: 100%;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--card-shadow);
+  padding: 32px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+/* ==========================================================================
+   Mode Navigation Tabs
+   ========================================================================== */
+
+.mode-tabs {
+  background: var(--tab-bg);
+  padding: 5px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transition: background-color 0.3s ease;
+}
+
+.tab-btn {
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.tab-btn:hover {
+  color: var(--text-main);
+}
+
+.tab-btn:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 1px;
+}
+
+.tab-btn.active {
+  background: var(--tab-active-bg);
+  color: var(--accent-text);
+  box-shadow: var(--tab-active-shadow);
+}
+
+/* ==========================================================================
+   Clock Display & Circular Progress Ring
+   ========================================================================== */
+
+.clock-wrapper {
+  position: relative;
+  width: 290px;
+  height: 290px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.progress-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.progress-ring-track {
+  stroke: var(--track-color);
+  transition: stroke 0.4s ease;
+}
+
+.progress-ring-fill {
+  stroke: var(--fill-color);
+  stroke-dasharray: 879.64; /* 2 * PI * 140 */
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.4s ease;
+}
+
+.timer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 1;
+}
+
+.mode-indicator {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  background: var(--accent-light);
+  border: 1px solid var(--accent-border);
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+.time-display {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 3.85rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.session-caption {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color 0.3s ease;
+}
+
+/* ==========================================================================
+   Action Controls (Start, Pause, Reset)
+   ========================================================================== */
+
+.controls-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 16px;
+}
+
+.ctrl-btn {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 13px 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+  flex: 1;
+  min-width: 95px;
+}
+
+.ctrl-btn:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.ctrl-btn .icon {
+  flex-shrink: 0;
+}
+
+/* Start Button - Primary Accent */
+.btn-start {
+  background: var(--accent-color);
+  color: #ffffff;
+  box-shadow: 0 8px 18px -4px rgba(0, 0, 0, 0.15);
+}
+
+.btn-start:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: translateY(-1.5px);
+  box-shadow: 0 10px 22px -4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-start:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.15);
+}
+
+/* Pause Button - Soft Tint */
+.btn-pause {
+  background: var(--accent-light);
+  color: var(--accent-text);
+  border: 1px solid var(--accent-border);
+}
+
+.btn-pause:hover:not(:disabled) {
+  background: #ffffff;
+  border-color: var(--accent-color);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 14px -3px rgba(0, 0, 0, 0.08);
+}
+
+.btn-pause:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Reset Button - Subtle Ghost */
+.btn-reset {
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--text-muted);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.btn-reset:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-main);
+  transform: translateY(-1.5px);
+}
+
+.btn-reset:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Disabled State */
+.ctrl-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* When timer is actively running - visual pulse on the clock */
+body.timer-running .progress-ring-fill {
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.08));
+}
+
+/* ==========================================================================
+   Footer & Audio Controls
+   ========================================================================== */
+
+.card-footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 6px;
+}
+
+.sound-toggle {
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-subtle);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.sound-toggle:hover {
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.sound-toggle:focus-visible {
+  outline: 2px solid var(--accent-color);
+}
+
+.sound-toggle .hidden {
+  display: none;
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .timer-card {
+    padding: 24px 18px 20px;
+    border-radius: 28px;
+  }
+
+  .mode-tabs {
+    margin-bottom: 20px;
+  }
+
+  .tab-btn {
+    font-size: 0.82rem;
+    padding: 7px 14px;
+  }
+
+  .clock-wrapper {
+    width: 250px;
+    height: 250px;
+    margin-bottom: 24px;
+  }
+
+  .time-display {
+    font-size: 3.25rem;
+  }
+
+  .controls-container {
+    gap: 8px;
+  }
+
+  .ctrl-btn {
+    font-size: 0.88rem;
+    padding: 12px 14px;
+    min-width: 80px;
+  }
+}
