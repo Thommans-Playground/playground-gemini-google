@@ -12,6 +12,7 @@
 </head>
 <body class="theme-focus">
   <main class="app-container">
+    <!-- Timer Section Card -->
     <div class="timer-card">
       <!-- Header / Mode Tab Selector -->
       <nav class="mode-tabs" role="tablist" aria-label="Timer Modes">
@@ -43,6 +44,12 @@
           Long Break
         </button>
       </nav>
+
+      <!-- Active Focus Task Pill (shown when a task is selected) -->
+      <div class="active-task-pill hidden" id="active-task-pill" title="Currently focused task">
+        <span class="active-task-indicator"></span>
+        <span class="active-task-label" id="active-task-label">Focus Task</span>
+      </div>
 
       <!-- Circular Timer Display -->
       <div class="clock-wrapper">
@@ -111,6 +118,53 @@
         </button>
       </div>
     </div>
+
+    <!-- Task Tracker Card -->
+    <section class="task-card" aria-label="Session Tasks">
+      <div class="task-header">
+        <div class="task-title-group">
+          <h2 class="task-title">Session Tasks</h2>
+          <span class="task-counter-pill" id="task-counter-pill">0 completed</span>
+        </div>
+        <button type="button" class="btn-clear-done hidden" id="btn-clear-done" title="Clear completed tasks">
+          Clear done
+        </button>
+      </div>
+
+      <!-- Add Task Form -->
+      <form class="task-input-form" id="task-form">
+        <input 
+          type="text" 
+          id="task-input" 
+          class="task-input" 
+          placeholder="Add a task for this session..." 
+          maxlength="100" 
+          autocomplete="off"
+          aria-label="New task name"
+        />
+        <button type="submit" class="btn-add-task" id="btn-add-task" aria-label="Add task">
+          <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>Add</span>
+        </button>
+      </form>
+
+      <!-- Task List Container -->
+      <ul class="task-list" id="task-list" role="list">
+        <!-- Rendered dynamically -->
+      </ul>
+
+      <!-- Empty State -->
+      <div class="task-empty-state" id="task-empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+        </svg>
+        <p class="empty-text">No tasks yet. Add a focus task to stay on track.</p>
+      </div>
+    </section>
   </main>
 
   <script src="app.js"></script>

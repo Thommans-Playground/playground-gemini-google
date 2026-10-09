@@ -1,5 +1,5 @@
 /**
- * Pomodoro Timer Application
+ * Pomodoro Timer Application with Session Task Tracker
  * Clean, modern single-page timer with Focus, Short Break, and Long Break modes.
  */
 
@@ -47,6 +47,8 @@ const state = {
   timerInterval: null,
   endTime: null,
   soundEnabled: true,
+  tasks: [],
+  activeTaskId: null,
 };
 
 // DOM Elements
@@ -65,6 +67,16 @@ const soundToggleBtn = document.getElementById('btn-sound-toggle');
 const soundOnIcon = soundToggleBtn.querySelector('.sound-on');
 const soundOffIcon = soundToggleBtn.querySelector('.sound-off');
 const soundLabel = soundToggleBtn.querySelector('.sound-label');
+
+// Task Tracker DOM Elements
+const activeTaskPill = document.getElementById('active-task-pill');
+const activeTaskLabel = document.getElementById('active-task-label');
+const taskForm = document.getElementById('task-form');
+const taskInput = document.getElementById('task-input');
+const taskList = document.getElementById('task-list');
+const taskEmptyState = document.getElementById('task-empty-state');
+const taskCounterPill = document.getElementById('task-counter-pill');
+const btnClearDone = document.getElementById('btn-clear-done');
 
 /**
  * Audio Synthesizer using Web Audio API for a soft, pleasant chime
@@ -116,6 +128,15 @@ function playGentleChime() {
   } catch (err) {
     console.warn('Audio chime could not be played:', err);
   }
+}
+
+/**
+ * Utility: HTML Escaping
+ */
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 /**
@@ -189,6 +210,9 @@ function render() {
 
   // Update document title
   updateDocumentTitle();
+
+  // Render tasks
+  renderTasks();
 }
 
 /**
@@ -302,6 +326,210 @@ function toggleSound() {
   }
 }
 
+/* ==========================================================================
+   Task Tracker Logic
+   ========================================================================== */
+
+/**
+ * Load tasks from localStorage
+ */
+function loadTasks() {
+  try {
+    const savedTasks = localStorage.getItem('pomodoro_tasks');
+    if (savedTasks) {
+      state.tasks = JSON.parse(savedTasks);
+    } else {
+      // Default initial tasks for a calm start
+      state.tasks = [
+        { id: 'task-1', title: 'Focus on main priority', completed: false, createdAt: Date.now() },
+        { id: 'task-2', title: 'Review notes & wrap up', completed: false, createdAt: Date.now() + 1 },
+      ];
+      saveTasks();
+    }
+
+    state.activeTaskId = localStorage.getItem('pomodoro_active_task_id') || (state.tasks[0]?.id || null);
+  } catch (err) {
+    console.error('Error loading tasks:', err);
+    state.tasks = [];
+    state.activeTaskId = null;
+  }
+}
+
+/**
+ * Save tasks to localStorage
+ */
+function saveTasks() {
+  try {
+    localStorage.setItem('pomodoro_tasks', JSON.stringify(state.tasks));
+    if (state.activeTaskId) {
+      localStorage.setItem('pomodoro_active_task_id', state.activeTaskId);
+    } else {
+      localStorage.removeItem('pomodoro_active_task_id');
+    }
+  } catch (err) {
+    console.error('Error saving tasks:', err);
+  }
+}
+
+/**
+ * Add a new task
+ */
+function addTask(title) {
+  const trimmed = title.trim();
+  if (!trimmed) return;
+
+  const newTask = {
+    id: `task_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+    title: trimmed,
+    completed: false,
+    createdAt: Date.now(),
+  };
+
+  state.tasks.push(newTask);
+
+  // If no active task currently, select this one
+  if (!state.activeTaskId) {
+    state.activeTaskId = newTask.id;
+  }
+
+  saveTasks();
+  renderTasks();
+}
+
+/**
+ * Toggle task completed state
+ */
+function toggleTask(id) {
+  const task = state.tasks.find(t => t.id === id);
+  if (!task) return;
+
+  task.completed = !task.completed;
+
+  // If the active task was just completed, attempt to set the next incomplete task as active
+  if (task.completed && state.activeTaskId === id) {
+    const nextIncomplete = state.tasks.find(t => !t.completed && t.id !== id);
+    if (nextIncomplete) {
+      state.activeTaskId = nextIncomplete.id;
+    }
+  } else if (!task.completed && !state.activeTaskId) {
+    state.activeTaskId = id;
+  }
+
+  saveTasks();
+  renderTasks();
+}
+
+/**
+ * Delete a task
+ */
+function deleteTask(id) {
+  state.tasks = state.tasks.filter(t => t.id !== id);
+
+  if (state.activeTaskId === id) {
+    const nextIncomplete = state.tasks.find(t => !t.completed);
+    state.activeTaskId = nextIncomplete ? nextIncomplete.id : null;
+  }
+
+  saveTasks();
+  renderTasks();
+}
+
+/**
+ * Set a task as the current focus session target
+ */
+function setActiveTask(id) {
+  if (state.activeTaskId === id) {
+    // Clicking again deselects
+    state.activeTaskId = null;
+  } else {
+    state.activeTaskId = id;
+  }
+  saveTasks();
+  renderTasks();
+}
+
+/**
+ * Clear all completed tasks
+ */
+function clearDoneTasks() {
+  const completedIds = new Set(state.tasks.filter(t => t.completed).map(t => t.id));
+  state.tasks = state.tasks.filter(t => !t.completed);
+
+  if (completedIds.has(state.activeTaskId)) {
+    const nextIncomplete = state.tasks.find(t => !t.completed);
+    state.activeTaskId = nextIncomplete ? nextIncomplete.id : null;
+  }
+
+  saveTasks();
+  renderTasks();
+}
+
+/**
+ * Render the Task List and Header counters
+ */
+function renderTasks() {
+  if (!taskList) return;
+
+  const total = state.tasks.length;
+  const completedCount = state.tasks.filter(t => t.completed).length;
+
+  // Update header counter
+  if (total === 0) {
+    taskCounterPill.textContent = '0 tasks';
+  } else {
+    taskCounterPill.textContent = `${completedCount} of ${total} done`;
+  }
+
+  // Toggle "Clear done" button
+  if (completedCount > 0) {
+    btnClearDone.classList.remove('hidden');
+  } else {
+    btnClearDone.classList.add('hidden');
+  }
+
+  // Toggle empty state
+  if (total === 0) {
+    taskEmptyState.classList.remove('hidden');
+    taskList.innerHTML = '';
+  } else {
+    taskEmptyState.classList.add('hidden');
+
+    // Build task item elements
+    taskList.innerHTML = state.tasks
+      .map(task => {
+        const isCurrentActive = state.activeTaskId === task.id;
+        return `
+          <li class="task-item ${task.completed ? 'completed' : ''} ${isCurrentActive ? 'active-focus' : ''}" data-id="${task.id}">
+            <button type="button" class="task-check-btn" aria-label="${task.completed ? 'Mark incomplete' : 'Mark completed'}" data-action="toggle">
+              <svg class="task-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </button>
+            <span class="task-label" data-action="select" title="Click to set as current focus task">
+              ${escapeHtml(task.title)}
+            </span>
+            ${isCurrentActive ? '<span class="task-focus-tag">Focus</span>' : ''}
+            <button type="button" class="task-delete-btn" aria-label="Delete task" data-action="delete" title="Delete task">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+              </svg>
+            </button>
+          </li>
+        `;
+      })
+      .join('');
+  }
+
+  // Update Active Task Pill on the Timer Card
+  const activeTask = state.tasks.find(t => t.id === state.activeTaskId && !t.completed);
+  if (activeTask && activeTaskPill && activeTaskLabel) {
+    activeTaskLabel.textContent = activeTask.title;
+    activeTaskPill.classList.remove('hidden');
+  } else if (activeTaskPill) {
+    activeTaskPill.classList.add('hidden');
+  }
+}
+
 /**
  * Event Listeners
  */
@@ -324,9 +552,40 @@ function initEventListeners() {
   // Sound toggle
   soundToggleBtn.addEventListener('click', toggleSound);
 
+  // Task Form Submission
+  taskForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    addTask(taskInput.value);
+    taskInput.value = '';
+    taskInput.focus();
+  });
+
+  // Task list click delegation (check, select, delete)
+  taskList.addEventListener('click', (e) => {
+    const actionEl = e.target.closest('[data-action]');
+    if (!actionEl) return;
+
+    const taskItem = e.target.closest('.task-item');
+    if (!taskItem) return;
+
+    const taskId = taskItem.dataset.id;
+    const action = actionEl.dataset.action;
+
+    if (action === 'toggle') {
+      toggleTask(taskId);
+    } else if (action === 'delete') {
+      deleteTask(taskId);
+    } else if (action === 'select') {
+      setActiveTask(taskId);
+    }
+  });
+
+  // Clear completed tasks button
+  btnClearDone.addEventListener('click', clearDoneTasks);
+
   // Keyboard accessibility shortcuts (Space to toggle start/pause, 'r' to reset)
   document.addEventListener('keydown', (e) => {
-    // Avoid interfering if focus is in an input
+    // Avoid interfering if focus is in an input or button
     if (['input', 'textarea'].includes(e.target.tagName.toLowerCase())) return;
 
     if (e.code === 'Space') {
@@ -352,6 +611,7 @@ function init() {
     progressCircle.style.strokeDashoffset = '0';
   }
 
+  loadTasks();
   initEventListeners();
   render();
 }
